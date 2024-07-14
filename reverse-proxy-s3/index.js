@@ -4,9 +4,8 @@ const httpProxy = require("http-proxy");
 const app = express();
 const PORT = 8000;
 
-// this is the base path where we stored the dist files in s3 bucket with key has __outputs/projectId
 const AWS_BASE_PATH =
-  "https://siddanth-vercel-clone.s3.amazonaws.com/__outputs";
+  "https://vercel-build-server-outputs.s3.amazonaws.com/_buildOutputs";
 
 const proxy = httpProxy.createProxy();
 
