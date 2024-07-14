@@ -1,6 +1,9 @@
 const express = require("express");
 const { ECSClient, RunTaskCommand } = require("@aws-sdk/client-ecs");
 const { v4 } = require("uuid");
+const config = require("./config.json");
+const { Server } = require("socket.io");
+const Redis = require("ioredis");
 
 const app = express();
 const PORT = 9000;
@@ -8,12 +11,36 @@ const PORT = 9000;
 app.use(express.json());
 
 const ecsClient = new ECSClient({
-  region: "ap-south-1",
+  region: config.aws.region,
   credentials: {
-    accessKeyId: "",
-    secretAccessKey: "",
+    accessKeyId: config.aws.accessKeyId,
+    secretAccessKey: config.aws.secretAccessKey,
   },
 });
+
+const RedisClient = new Redis(config.redisUrl); // this is for subscriber of logs, publishe by build-servers
+
+const io = new Server({ cors: "*" });
+
+io.listen(9005, () => console.log("io server on 9005"));
+
+io.on("connection", (socket) => {
+  socket.on("subscribe", (channel) => {
+    socket.join(channel);
+    socket.emit("message", `Joined ${channel}`);
+  });
+});
+
+const reverseProxyUrl = "localhost:8000";
+
+async function initRedisSubscribe() {
+  console.log("Redis Subscribed to logs");
+  RedisClient.psubscribe("logs:*"); // subscribe to logs with pattern of log: since we are publishing with key has logs:
+  RedisClient.on("pmessage", (pattern, channel, message) => {
+    console.log("message :", message);
+    io.to(channel).emit("message", message); // can listen in message event
+  });
+}
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello from the server!" });
@@ -23,28 +50,18 @@ app.post("/deploy", async (req, res) => {
   const { repository_url } = req.body;
   const projectId =
     v4() || `${Date.now().now() + Math.random() * Math.random() * 100}`;
-  console.log("projectId", projectId, repository_url);
-
-  const config = {
-    CLUSTER_NAME: "vercel-build-servers",
-    TASK_NAME: "vercel-build-server",
-  };
 
   // run the task on ECS cluster
   const command = new RunTaskCommand({
-    cluster: config.CLUSTER_NAME,
-    taskDefinition: config.TASK_NAME,
+    cluster: config.aws.CLUSTER_NAME,
+    taskDefinition: config.aws.TASK_NAME,
     launchType: "FARGATE",
     count: 1,
     networkConfiguration: {
       awsvpcConfiguration: {
         assignPublicIp: "ENABLED",
-        subnets: [
-          "subnet-0b491b9792410c2f4",
-          "subnet-0bb886607c3884c6d",
-          "subnet-09394c5b3398b668e",
-        ],
-        securityGroups: ["sg-04fed703b8d0816c3"],
+        subnets: config.aws.subnets,
+        securityGroups: config.aws.securityGroups,
       },
     },
     overrides: {
@@ -63,9 +80,11 @@ app.post("/deploy", async (req, res) => {
   await ecsClient.send(command);
 
   return res.json({
-    status: "queued",
-    data: { projectId, url: `http://${projectId}.localhost:8000` },
+    data: { projectId, url: `http://${projectId}.${reverseProxyUrl}` },
+    status: "Queued",
   });
 });
+
+initRedisSubscribe();
 
 app.listen(PORT, () => console.log(`running on: ${PORT}`));
