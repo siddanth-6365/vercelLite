@@ -35,7 +35,7 @@ const reverseProxyUrl = "localhost:8000";
 
 async function initRedisSubscribe() {
   console.log("Redis Subscribed to logs");
-  RedisClient.psubscribe("logs:*"); // subscribe to logs with pattern of log: since we are publishing with key has logs:
+  RedisClient.psubscribe("logs:*"); // subscribe to logs with pattern of log: since we are publishing with key has logs:projectId
   RedisClient.on("pmessage", (pattern, channel, message) => {
     console.log("message :", message);
     io.to(channel).emit("message", message); // can listen in message event
@@ -47,7 +47,11 @@ app.get("/", (req, res) => {
 });
 
 app.post("/deploy", async (req, res) => {
-  const { repository_url } = req.body;
+  const { repository_url, rootDirectory } = req.body;
+  if (rootDirectory == "/") {
+    rootDirectory = "";
+  }
+  
   const projectId =
     v4() || `${Date.now().now() + Math.random() * Math.random() * 100}`;
 
@@ -71,6 +75,7 @@ app.post("/deploy", async (req, res) => {
           environment: [
             { name: "repository_url", value: repository_url },
             { name: "PROJECT_ID", value: projectId },
+            { name: "ROOT_DIRECTORY", value: rootDirectory },
           ],
         },
       ],
