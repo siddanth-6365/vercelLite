@@ -4,8 +4,10 @@ const { v4 } = require("uuid");
 const config = require("./config.json");
 const { Server } = require("socket.io");
 const Redis = require("ioredis");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 const PORT = 9000;
 
 app.use(express.json());
@@ -24,12 +26,14 @@ const io = new Server({ cors: "*" });
 
 io.listen(9005, () => console.log("io server on 9005"));
 
-io.on("connection", (socket) => {
-  socket.on("subscribe", (channel) => {
-    socket.join(channel);
-    socket.emit("message", `Joined ${channel}`);
-  });
-});
+io.on('connection', socket => {
+  socket.on('subscribe', channel => {
+      socket.join(channel)
+      console.log(`Joined ${channel}`)
+      socket.emit('message', `Joined ${channel}`)
+  })
+})
+
 
 const reverseProxyUrl = "localhost:8000";
 
@@ -38,7 +42,7 @@ async function initRedisSubscribe() {
   RedisClient.psubscribe("logs:*"); // subscribe to logs with pattern of log: since we are publishing with key has logs:projectId
   RedisClient.on("pmessage", (pattern, channel, message) => {
     console.log("message :", message);
-    io.to(channel).emit("message", message); // can listen in message event
+    io.to(channel).emit("message", message); // emit to specific channel
   });
 }
 
@@ -48,10 +52,11 @@ app.get("/", (req, res) => {
 
 app.post("/deploy", async (req, res) => {
   const { repository_url, rootDirectory } = req.body;
-  if (rootDirectory == "/") {
-    rootDirectory = "";
+  const defaultRootDirectory = "";
+  if (rootDirectory != "/") {
+    defaultRootDirectory = rootDirectory;
   }
-  
+
   const projectId =
     v4() || `${Date.now().now() + Math.random() * Math.random() * 100}`;
 
@@ -75,7 +80,7 @@ app.post("/deploy", async (req, res) => {
           environment: [
             { name: "repository_url", value: repository_url },
             { name: "PROJECT_ID", value: projectId },
-            { name: "ROOT_DIRECTORY", value: rootDirectory },
+            { name: "ROOT_DIRECTORY", value: defaultRootDirectory },
           ],
         },
       ],

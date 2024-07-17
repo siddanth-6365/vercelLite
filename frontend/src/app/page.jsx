@@ -1,3 +1,5 @@
+"use client";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -9,15 +11,25 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Component() {
+  const [userframework, setFramework] = useState("react");
+  const router = useRouter();
+  const socket = io("http://localhost:9005");
+
+  const handleFrameworkChange = (e) => {
+    setFramework(e.target.value);
+    console.log(userframework);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const repository_url = e.target.elements["github-url"].value;
-    const framework = e.target.elements["framework"].value;
+    const framework = userframework;
     const rootDirectory = e.target.elements["root-directory"].value;
 
-    console.log({ githubUrl, framework, rootDirectory });
+    console.log({ repository_url, framework, rootDirectory });
 
     try {
       const endpoint = "http://localhost:9000/deploy";
@@ -31,6 +43,7 @@ export default function Component() {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
+        router.push(`/logs/${data.data.projectId}`);
       }
     } catch (error) {
       console.error(error);
@@ -51,7 +64,7 @@ export default function Component() {
       <div className="max-w-xl w-full px-4 md:px-0 mt-8">
         <Card>
           <CardContent className="space-y-4 p-4">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="github-url">Github URL</Label>
                 <Input
@@ -73,7 +86,9 @@ export default function Component() {
                 </Select>
               </div>
               <div className="space-y-2 mt-2">
-                <Label htmlFor="root-directory">Root Directory : ( "/" if already in root folder )</Label>
+                <Label htmlFor="root-directory">
+                  Root Directory : ( "/" if already in root folder )
+                </Label>
                 <Input
                   id="root-directory"
                   placeholder="Enter your root directory"
