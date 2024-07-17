@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 export default function Component() {
   const [userframework, setFramework] = useState("react");
   const router = useRouter();
-  const socket = io("http://localhost:9005");
 
   const handleFrameworkChange = (e) => {
     setFramework(e.target.value);
@@ -42,8 +41,8 @@ export default function Component() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        router.push(`/logs/${data.data.projectId}`);
+        const projectId = await data.data.projectId;
+        router.push(`/logs/${projectId}`);
       }
     } catch (error) {
       console.error(error);

@@ -26,14 +26,13 @@ const io = new Server({ cors: "*" });
 
 io.listen(9005, () => console.log("io server on 9005"));
 
-io.on('connection', socket => {
-  socket.on('subscribe', channel => {
-      socket.join(channel)
-      console.log(`Joined ${channel}`)
-      socket.emit('message', `Joined ${channel}`)
-  })
-})
-
+io.on("connection", (socket) => {
+  socket.on("subscribe", (channel) => {
+    socket.join(channel);
+    console.log(`Joined ${channel}`);
+    socket.emit("message", `Joined ${channel}`);
+  });
+});
 
 const reverseProxyUrl = "localhost:8000";
 
@@ -93,6 +92,13 @@ app.post("/deploy", async (req, res) => {
     data: { projectId, url: `http://${projectId}.${reverseProxyUrl}` },
     status: "Queued",
   });
+});
+
+app.get("/deployedUrl", async (req, res) => {
+  const { projectId } = req.query;
+  console.log("projectId", projectId);
+  const url = `http://${projectId}.${reverseProxyUrl}`;
+  return res.json({ data: { deployedUrl: url } });
 });
 
 initRedisSubscribe();
