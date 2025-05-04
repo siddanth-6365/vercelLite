@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM node:20
 
 # Installing nodejs, curl and git
 RUN apt-get update  

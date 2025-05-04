@@ -41,6 +41,7 @@ export default function Component() {
       });
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         const projectId = await data.data.projectId;
         router.push(`/logs/${projectId}`);
       }
