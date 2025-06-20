@@ -2,19 +2,25 @@
   "name": "api-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-ecs": "^3.614.0",
+    "@prisma/client": "^6.10.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "ioredis": "^5.4.1",
+    "nodemon": "^3.1.10",
     "socket.io": "^4.7.5",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.10.1"
   }
 }

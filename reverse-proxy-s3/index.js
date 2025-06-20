@@ -1,27 +1,42 @@
 const express = require("express");
+const config = require("./config.json");
 const httpProxy = require("http-proxy");
+const axios = require("axios");
 
 const app = express();
 const PORT = 8000;
 
-const AWS_BASE_PATH =
-  "https://vercel-build-server-outputs.s3.amazonaws.com/_buildOutputs";
+const S3_BASE = config.S3_BASE;
+const API_URL = config.NODE_API_SERVER;
 
 const proxy = httpProxy.createProxy();
 
-app.use((req, res) => {
-  // so here we are adding projectId as subdomain (eg : p2.vercelLite.com), since we are storing the dist files in s3 bucket with projectId in key
-  const projectId = req.hostname.split(".")[0];
+// All incoming requests go through this handler
+app.use(async (req, res) => {
+  try {
+    // 1) Extract subdomain
+    const host = req.headers.host.split(":")[0]; // e.g. "myapp.localtest.me"
+    const sub = host.split(".")[0]; // e.g. "myapp"
 
-  const targetUrl = `${AWS_BASE_PATH}/${projectId}`;
-  return proxy.web(req, res, { target: targetUrl, changeOrigin: true });
+    // 2) Ask the API to resolve it → { buildId }
+    const { data } = await axios.get(`${API_URL}/domainMappings/resolve/${sub}`);
+    const { buildId } = data;
+
+    // 3) Rewrite URL so "/" → "/index.html"
+    req.url = req.url === "/" ? "/index.html" : req.url;
+
+    // 4) Proxy into S3
+    const target = `${S3_BASE}/${buildId}`;
+    proxy.web(req, res, { target, changeOrigin: true });
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return res.status(404).send("Site not found");
+    }
+    console.error("Proxy error:", err);
+    res.status(502).send("Bad gateway");
+  }
 });
 
-proxy.on("proxyReq", (proxyReq, req, res) => {
-  //  proxyReq event handler is used to modify the request before it is sent to the S3 bucket
-  // why are we doing this because if i add index.html directly to the target url it is requesting to index.html/ (here / is added at the end) and aws s3 is not able to find the file since we stored the file without / at the end as key
-  const url = req.url;
-  if (url === "/") proxyReq.path += "index.html";
-});
-
-app.listen(PORT, () => console.log(` server running on: ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🔀 Reverse proxy running on http://localhost:${PORT}`)
+);
