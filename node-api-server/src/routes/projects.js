@@ -7,7 +7,13 @@ router.post("/", async (req, res, next) => {
   try {
     const { userId, name, gitUrl, defaultBranch, rootDirectory } = req.body;
     const project = await prisma.project.create({
-      data: { userId: Number(userId), name, gitUrl, defaultBranch, rootDirectory },
+      data: {
+        userId: Number(userId),
+        name,
+        gitUrl,
+        defaultBranch,
+        rootDirectory,
+      },
     });
     res.status(201).json(project);
   } catch (err) {
@@ -15,10 +21,13 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// List all projects
+// get user projects
 router.get("/", async (req, res, next) => {
   try {
-    const projects = await prisma.project.findMany();
+    const userId = req.query.userId;
+    const projects = await prisma.project.findMany({
+      where: { userId: Number(userId) },
+    });
     res.json(projects);
   } catch (err) {
     next(err);

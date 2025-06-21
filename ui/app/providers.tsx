@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <AuthProvider>
         {children}
         <Toaster />
