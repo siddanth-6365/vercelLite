@@ -3,13 +3,29 @@ const prisma = require("../prisma");
 const router = express.Router();
 
 // Create a new user
-router.post("/", async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
   try {
     const { name, email, passwordHash, githubId } = req.body;
     const user = await prisma.user.create({
       data: { name, email, passwordHash, githubId },
     });
     res.status(201).json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/login", async (req, res, next) => {
+  try {
+    const { email, passwordHash } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    if (user.passwordHash !== passwordHash) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    res.json(user);
   } catch (err) {
     next(err);
   }
