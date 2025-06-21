@@ -51,9 +51,11 @@ model Project {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user          User            @relation(fields: [userId], references: [id])
-  deployments   Deployment[]
-  domainMapping DomainMapping[]
+  user             User               @relation(fields: [userId], references: [id])
+  deployments      Deployment[]
+  analyticsEvent   AnalyticsEvent[]
+  analyticsSummary AnalyticsSummary[]
+  domainMapping    DomainMapping[]
 }
 
 model Deployment {
@@ -91,4 +93,31 @@ model DomainMapping {
   updatedAt DateTime @updatedAt
 
   project Project @relation(fields: [projectId], references: [id])
+}
+
+model AnalyticsEvent {
+  id         Int      @id @default(autoincrement())
+  projectId  Int
+  path       String
+  ip         String
+  country    String?
+  region     String?
+  city       String?
+  deviceType String?
+  os         String?
+  browser    String?
+  createdAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id])
+}
+
+model AnalyticsSummary {
+  id        Int    @id @default(autoincrement())
+  projectId Int
+  date      DateTime
+  views     Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@unique([projectId, date])
 }
