@@ -14,6 +14,16 @@ function initSocket(server) {
     socket.on("disconnect", () => {
       console.log("User disconnected");
     });
+
+    socket.on("subscribe", (channel) => {
+      console.log(`Subscribed to ${channel}`);
+      socket.join(channel);
+    });
+
+    socket.on("unsubscribe", (channel) => {
+      console.log(`Unsubscribed from ${channel}`);
+      socket.leave(channel);
+    });
   });
 
   return io;

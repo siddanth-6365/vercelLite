@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useAuth } from "@/components/auth-provider"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 interface CreateProjectModalProps {
   open: boolean
@@ -25,13 +26,15 @@ export function CreateProjectModal({ open, onClose, onProjectCreated }: CreatePr
   const [isLoading, setIsLoading] = useState(false)
   const { userId } = useAuth()
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const response = await fetch("http://localhost:9000/projects", {
+      const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+      const response = await fetch(`${BACKEND_URL}/projects`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +53,10 @@ export function CreateProjectModal({ open, onClose, onProjectCreated }: CreatePr
           title: "Success",
           description: "Project created successfully!",
         })
+        const data = await response.json()
+        console.log("project data:", data)
+        router.push(`/project/${data.id}`)
+
         setName("")
         setGitUrl("")
         setDefaultBranch("main")
@@ -64,9 +71,10 @@ export function CreateProjectModal({ open, onClose, onProjectCreated }: CreatePr
         })
       }
     } catch (error) {
+      console.error("Error creating project:", error)
       toast({
         title: "Error",
-        description: "Network error. Please try again.",
+        description: "Failed to create project. Please try again.",
         variant: "destructive",
       })
     } finally {

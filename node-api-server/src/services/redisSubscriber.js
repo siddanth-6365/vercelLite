@@ -46,7 +46,7 @@ function initRedis(io, redisUrl) {
     const when = new Date(timestamp);
 
     // 1) Broadcast only to sockets in room `logs:<deploymentId>`
-    io.to(channel).emit("log", { level, text, timestamp: when });
+    io.to(channel).emit("message", { level, text, timestamp });
 
     // 2) Buffer for bulk insert
     buffers[deploymentId] = buffers[deploymentId] || [];

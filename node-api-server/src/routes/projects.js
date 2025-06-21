@@ -7,7 +7,7 @@ router.post("/", async (req, res, next) => {
   try {
     const { userId, name, gitUrl, defaultBranch, rootDirectory } = req.body;
     const project = await prisma.project.create({
-      data: { userId, name, gitUrl, defaultBranch, rootDirectory },
+      data: { userId: Number(userId), name, gitUrl, defaultBranch, rootDirectory },
     });
     res.status(201).json(project);
   } catch (err) {

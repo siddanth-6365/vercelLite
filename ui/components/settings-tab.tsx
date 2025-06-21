@@ -141,7 +141,7 @@ export function SettingsTab({ projectId }: SettingsTabProps) {
               </Label>
               <Input id="domain" placeholder="myapp" value={newDomain} onChange={(e) => setNewDomain(e.target.value)} />
               <p className="text-sm text-gray-500 mt-1">
-                Enter a subdomain prefix (e.g., "myapp" for myapp.localhost:3000)
+                Enter a subdomain prefix (e.g., "myapp" for myapp.vercelite.com)
               </p>
             </div>
             <Button type="submit" disabled={isAdding}>
@@ -157,11 +157,11 @@ export function SettingsTab({ projectId }: SettingsTabProps) {
                 <div key={domain.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-2">
                     <Globe className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">{domain.domain}.localhost:3000</span>
+                    <span className="font-medium">{domain.domain}.{PROXY_URL}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button variant="outline" size="sm" asChild>
-                      <a href={`http://${domain.domain}.localhost:3000`} target="_blank" rel="noopener noreferrer">
+                      <a href={`http://${domain.domain}.${PROXY_URL}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Visit
                       </a>

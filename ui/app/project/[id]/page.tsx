@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { GitBranch, Folder, Globe } from "lucide-react"
 import { DeploymentsTab } from "@/components/deployments-tab"
 import { SettingsTab } from "@/components/settings-tab"
+import { OverviewTab } from "@/components/overview-tab"
 import { useToast } from "@/hooks/use-toast"
 
 interface Project {
@@ -113,11 +114,15 @@ export default function ProjectDetailPage() {
           </Card>
         </div>
 
-        <Tabs defaultValue="deployments" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="deployments">Deployments</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
+          <TabsContent value="overview">
+            <OverviewTab projectId={projectId} />
+          </TabsContent>
           <TabsContent value="deployments">
             <DeploymentsTab projectId={projectId} />
           </TabsContent>

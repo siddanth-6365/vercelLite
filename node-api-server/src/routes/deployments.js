@@ -19,10 +19,17 @@ router.put("/:id/complete", completeDeployment);
 // List deployments (optionally filter by project)
 router.get("/", async (req, res, next) => {
   try {
+    const sort = req.query.sort || "desc";
+    const limit = Number(req.query.limit) || 10;
+
     const where = req.query.projectId
       ? { projectId: Number(req.query.projectId) }
       : {};
-    const deployments = await prisma.deployment.findMany({ where });
+    const deployments = await prisma.deployment.findMany({
+      where,
+      orderBy: { createdAt: sort },
+      take: limit,
+    });
     res.json(deployments);
   } catch (err) {
     next(err);

@@ -8,7 +8,7 @@ async function createDeployment(req, res, next) {
 
     // 1) fetch project details
     const project = await prisma.project.findUnique({
-      where: { id: projectId },
+      where: { id: Number(projectId) },
     });
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
@@ -19,7 +19,7 @@ async function createDeployment(req, res, next) {
 
     const deployment = await prisma.deployment.create({
       data: {
-        projectId,
+        projectId: Number(projectId),
         triggeredById: Number(project.userId),
       },
     });
