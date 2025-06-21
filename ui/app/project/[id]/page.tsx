@@ -11,6 +11,7 @@ import { DeploymentsTab } from "@/components/deployments-tab"
 import { SettingsTab } from "@/components/settings-tab"
 import { OverviewTab } from "@/components/overview-tab"
 import { useToast } from "@/hooks/use-toast"
+import { AnalyticsTab } from "@/components/analytics-tab"
 
 interface Project {
   id: string
@@ -118,6 +119,7 @@ export default function ProjectDetailPage() {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="deployments">Deployments</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
@@ -125,6 +127,9 @@ export default function ProjectDetailPage() {
           </TabsContent>
           <TabsContent value="deployments">
             <DeploymentsTab projectId={projectId} />
+          </TabsContent>
+          <TabsContent value="analytics">
+            <AnalyticsTab projectId={projectId} />
           </TabsContent>
           <TabsContent value="settings">
             <SettingsTab projectId={projectId} />

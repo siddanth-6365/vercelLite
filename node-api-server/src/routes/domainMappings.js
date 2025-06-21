@@ -66,7 +66,7 @@ router.get("/resolve/:subdomain", async (req, res, next) => {
       buildId = sub;
     }
 
-    res.json({ buildId });
+    res.json({ buildId, projectId: mapping?.projectId });
   } catch (err) {
     next(err);
   }

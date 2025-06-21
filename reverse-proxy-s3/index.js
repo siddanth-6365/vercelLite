@@ -22,6 +22,7 @@ async function resolveBuildId(subdomain) {
   const resp = await axios.get(
     `${config.NODE_API_SERVER}/domainMappings/resolve/${subdomain}`
   );
+  console.log(resp.data);
   const { buildId, projectId } = resp.data;
   domainCache.set(subdomain, { buildId, projectId, ts: now });
   return buildId;
@@ -32,7 +33,7 @@ app.use(async (req, res, next) => {
     const host = req.headers.host.split(":")[0]; // e.g. "myapp.localtest.me"
     const sub = host.split(".")[0]; // e.g. "myapp"
     req.buildId = await resolveBuildId(sub); // attach for later
-    req.projectId = domainCache.get(sub).projectId; // for analytics
+    req.projectId = domainCache.get(sub).projectId ; // for analytics
     next();
   } catch (err) {
     if (err.response?.status === 404) {
