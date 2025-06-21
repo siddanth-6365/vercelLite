@@ -58,7 +58,7 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen ">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-center h-64">
@@ -71,11 +71,11 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen ">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">Project not found</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Project not found</h1>
           </div>
         </div>
       </div>
@@ -83,11 +83,11 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{project.name}</h1>
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Project Details</CardTitle>
@@ -95,18 +95,18 @@ export default function ProjectDetailPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center space-x-2">
-                  <Globe className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Repository:</span>
+                  <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Repository:</span>
                   <span className="text-sm font-medium truncate">{project.gitUrl}</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <GitBranch className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Branch:</span>
+                  <GitBranch className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Branch:</span>
                   <Badge variant="secondary">{project.defaultBranch}</Badge>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Folder className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Root:</span>
+                  <Folder className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Root:</span>
                   <span className="text-sm font-medium">{project.rootDirectory}</span>
                 </div>
               </div>

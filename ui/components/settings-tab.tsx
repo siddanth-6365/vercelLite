@@ -183,7 +183,7 @@ export function SettingsTab({ projectId }: SettingsTabProps) {
           <CardDescription>Your project's production URL based on custom domains or default deployment</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="p-4 bg-gray-50 rounded-lg">
+          <div className="p-4 bg-gray-50 dark:bg-gray-950 rounded-lg">
             <div className="flex items-center space-x-2">
               <Globe className="h-5 w-5 text-gray-500" />
               <span className="font-mono text-sm">

@@ -63,11 +63,11 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
           </div>
         </div>
       </div>
@@ -75,12 +75,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Projects</h1>
             <p className="text-gray-600 mt-2">Manage and deploy your applications</p>
           </div>
           <Button onClick={() => setShowCreateModal(true)}>
@@ -94,8 +94,8 @@ export default function DashboardPage() {
             <div className="mx-auto h-24 w-24 text-gray-400 mb-4">
               <Folder className="h-full w-full" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
-            <p className="text-gray-600 mb-4">Get started by creating your first project</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No projects yet</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Get started by creating your first project</p>
             <Button onClick={() => setShowCreateModal(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Project

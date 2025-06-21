@@ -46,13 +46,16 @@ export function DeploymentsTab({ projectId }: Props) {
   const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL!
   const PROXY = process.env.NEXT_PUBLIC_PROXY_URL!
   const pollRef = useRef<number>()
+  const [loading, setLoading] = useState(false)
 
   // Fetch all deployments
   const fetchAll = async () => {
     try {
+      setLoading(true)
       const res = await fetch(`${BACKEND}/deployments?projectId=${projectId}`)
       if (res.ok) setDeployments(await res.json())
     } catch { }
+    setLoading(false)
   }
 
   // Fetch single deployment
@@ -179,125 +182,137 @@ export function DeploymentsTab({ projectId }: Props) {
           </Button>
         </CardHeader>
       </Card> */}
-
-      {/* History */}
-      {deployments.length === 0 ? (
-        <Card className="text-center py-12">
-          <Rocket className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <p className="font-semibold mb-1">No deployments yet</p>
-          <p className="text-gray-500">
-            Click “New Deployment” to get started.
-          </p>
-        </Card>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <Rocket className="w-16 h-16 mx-auto text-gray-400 mb-4 animate-bounce" />
+            <p className="font-semibold mb-1">Loading deployments...</p>
+            <p className="text-gray-500">
+              Please wait while we load your deployments.
+            </p>
+          </div>
+        </div>
       ) : (
-        <div className="space-y-3">
-          {deployments.map((d) => {
-            const conf = getStatusConfig(d.status)
-            const duration =
-              d.startedAt && d.finishedAt
-                ? Math.round(
-                  (new Date(d.finishedAt).getTime() -
-                    new Date(d.startedAt).getTime()) /
-                  1000
-                )
-                : null
+        <div className="space-y-6">
+          {deployments.length === 0 ? (
+            <Card className="text-center py-12">
+              <Rocket className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+              <p className="font-semibold mb-1">No deployments yet</p>
+              <p className="text-gray-500">
+                Click “New Deployment” to get started.
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {deployments.map((d) => {
+                const conf = getStatusConfig(d.status)
+                const duration =
+                  d.startedAt && d.finishedAt
+                    ? Math.round(
+                      (new Date(d.finishedAt).getTime() -
+                        new Date(d.startedAt).getTime()) /
+                      1000
+                    )
+                    : null
 
-            return (
-              <Card
-                key={d.id}
-                className={`cursor-pointer transition ${conf.bgColor} border-l-4 ${d.status === "success"
-                  ? "border-l-green-500"
-                  : d.status === "failed"
-                    ? "border-l-red-500"
-                    : d.status === "running"
-                      ? "border-l-blue-500"
-                      : "border-l-gray-300"
-                  }`}
-                onClick={() => {
-                  setActiveId(d.id === activeId ? null : d.id)
-                  if (d.status === "running" && d.id !== activeId) {
-                    setIsPolling(true)
-                  } else {
-                    setIsPolling(false)
-                  }
-                }}
-              >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className={`${conf.color} mt-1`}>{conf.icon}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Badge className={conf.badge}>
-                            {d.status.toUpperCase()}
-                          </Badge>
-                          {d.buildId && (
-                            <span className="font-mono text-sm text-gray-600">
-                              {d.buildId.slice(0, 8)}
-                            </span>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4 text-gray-500" />
-                            <span className="text-gray-500">
-                              {new Date(d.createdAt).toLocaleString()}
-                            </span>
-                          </div>
-                          {duration && (
-                            <div className="flex items-center space-x-2">
-                              <Timer className="w-4 h-4 text-gray-500" />
-                              <span className="text-gray-500">
-                                {duration}s
-                              </span>
+                return (
+                  <Card
+                    key={d.id}
+                    className={`cursor-pointer transition ${conf.bgColor}  border-l-4 ${d.status === "success"
+                      ? "border-l-green-500"
+                      : d.status === "failed"
+                        ? "border-l-red-500"
+                        : d.status === "running"
+                          ? "border-l-blue-500"
+                          : "border-l-gray-300"
+                      }`}
+                    onClick={() => {
+                      setActiveId(d.id === activeId ? null : d.id)
+                      if (d.status === "running" && d.id !== activeId) {
+                        setIsPolling(true)
+                      } else {
+                        setIsPolling(false)
+                      }
+                    }}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-start space-x-4 flex-1">
+                          <div className={`${conf.color} mt-1`}>{conf.icon}</div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <Badge className={conf.badge}>
+                                {d.status.toUpperCase()}
+                              </Badge>
+                              {d.buildId && (
+                                <span className="font-mono text-sm text-gray-600">
+                                  {d.buildId.slice(0, 8)}
+                                </span>
+                              )}
                             </div>
-                          )}
-                          <div className="flex items-center space-x-2">
-                            <GitCommit className="w-4 h-4 text-gray-500" />
-                            <span className="text-gray-500">#{d.id}</span>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="w-4 h-4 text-gray-500" />
+                                <span className="text-gray-500">
+                                  {new Date(d.createdAt).toLocaleString()}
+                                </span>
+                              </div>
+                              {duration && (
+                                <div className="flex items-center space-x-2">
+                                  <Timer className="w-4 h-4 text-gray-500" />
+                                  <span className="text-gray-500">
+                                    {duration}s
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex items-center space-x-2">
+                                <GitCommit className="w-4 h-4 text-gray-500" />
+                                <span className="text-gray-500">#{d.id}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
+                        {d.status === "success" && d.buildId && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            asChild
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <a
+                              href={`http://${d.buildId}.${PROXY}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="w-4 h-4 mr-1" />
+                              Visit
+                            </a>
+                          </Button>
+                        )}
                       </div>
-                    </div>
-                    {d.status === "success" && d.buildId && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <a
-                          href={`http://${d.buildId}.${PROXY}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          Visit
-                        </a>
-                      </Button>
-                    )}
-                  </div>
 
-                  {/* Inline logs */}
-                  {activeId === d.id && (
-                    <div className="mt-4">
-                      {d.status === "running" ? (
-                        <LiveLogsConsole
-                          deploymentId={String(d.id)}
-                          onClose={() => setActiveId(null)}
-                        />
-                      ) : (
-                        <ArchivedLogsConsole
-                          deploymentId={String(d.id)}
-                          onClose={() => setActiveId(null)}
-                        />
+                      {/* Inline logs */}
+                      {activeId === d.id && (
+                        <div className="mt-4">
+                          {d.status === "running" ? (
+                            <LiveLogsConsole
+                              deploymentId={String(d.id)}
+                              onClose={() => setActiveId(null)}
+                            />
+                          ) : (
+                            <ArchivedLogsConsole
+                              deploymentId={String(d.id)}
+                              onClose={() => setActiveId(null)}
+                            />
+                          )}
+                        </div>
                       )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )
-          })}
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

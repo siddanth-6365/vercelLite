@@ -170,7 +170,7 @@ export function OverviewTab({ projectId }: OverviewTabProps) {
   return (
     <div className="space-y-6">
       {/* Status Card */}
-      <Card className={`${cfg.bg} ${cfg.border} border-2`}>
+      <Card className={`${cfg.bg} ${cfg.border} border-2 dark:bg-gray-950 dark:border-gray-800`}>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
