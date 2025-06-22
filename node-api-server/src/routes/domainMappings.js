@@ -61,6 +61,7 @@ router.get("/resolve/:subdomain", async (req, res, next) => {
         return res.status(404).json({ error: "No build found" });
       }
       buildId = latest.buildId;
+      projectId = latest.projectId;
     } else {
       // Fallback: treat the subdomain itself as a buildId
       buildId = sub;
