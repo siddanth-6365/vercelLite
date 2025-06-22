@@ -68,8 +68,34 @@ async function init() {
   process.stdout.on("close", async () => {
     console.log("build completed");
     publishMessage({ level: "info", text: "Build completed" });
-    // the dist folder be will created after building your application that contains the optimized and production-ready files for deployment.
-    const buildDir = path.join(outDir, "dist");
+
+    // NEW: detect which output folder was produced
+    const possibleDirs = ["dist", "build", "out"];
+    let buildDir = null;
+
+    for (const dir of possibleDirs) {
+      const candidate = path.join(outDir, dir);
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
+        buildDir = candidate;
+        console.log(`Found build output in "${dir}/"`);
+        publishMessage({
+          level: "info",
+          text: `Using output directory: ${dir}`,
+        });
+        break;
+      }
+    }
+
+    if (!buildDir) {
+      const msg = `No build output directory found (looked for: ${possibleDirs.join(
+        ", "
+      )}).`;
+      console.error(msg);
+      await publishMessage({ level: "error", text: msg });
+      await notifyDeployment("failed");
+      process.exit(1);
+    }
+
     const distFolderFiles = fs.readdirSync(buildDir, { recursive: true });
 
     for (let file of distFolderFiles) {

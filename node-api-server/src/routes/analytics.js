@@ -142,11 +142,17 @@ router.get("/project/:projectId/breakdown", async (req, res, next) => {
       since.setDate(since.getDate() - days + 1);
     }
 
+    // we'll only count events where path === "/" OR endsWith(".html")
+    const pageViewFilter = {
+      OR: [{ path: "/" }, { path: { endsWith: ".html" } }],
+    };
+
     // 1) total events in window
     const total = await prisma.analyticsEvent.count({
       where: {
         projectId,
         createdAt: { gte: since },
+        ...pageViewFilter,
       },
     });
 
@@ -154,7 +160,7 @@ router.get("/project/:projectId/breakdown", async (req, res, next) => {
     const makeGroup = (field) =>
       prisma.analyticsEvent.groupBy({
         by: [field],
-        where: { projectId, createdAt: { gte: since } },
+        where: { projectId, createdAt: { gte: since }, ...pageViewFilter },
         _count: { [field]: true },
         orderBy: { _count: { [field]: "desc" } },
       });

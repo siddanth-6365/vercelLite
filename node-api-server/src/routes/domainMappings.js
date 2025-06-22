@@ -46,7 +46,7 @@ router.get("/resolve/:subdomain", async (req, res, next) => {
     const mapping = await prisma.domainMapping.findUnique({
       where: { domain: sub },
     });
-    let buildId;
+    let buildId, projectId;
 
     if (mapping) {
       // If mapped, get latest successful deployment for that project
@@ -64,9 +64,13 @@ router.get("/resolve/:subdomain", async (req, res, next) => {
     } else {
       // Fallback: treat the subdomain itself as a buildId
       buildId = sub;
+      const project = await prisma.deployment.findFirst({
+        where: { buildId: sub },
+      });
+      projectId = project?.projectId;
     }
 
-    res.json({ buildId, projectId: mapping?.projectId });
+    res.json({ buildId, projectId });
   } catch (err) {
     next(err);
   }

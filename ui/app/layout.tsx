@@ -6,8 +6,11 @@ import { Providers } from "./providers"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "VercelLite - Deploy with Ease",
-  description: "A mini-Vercel clone for seamless deployments",
+  title: "vercelLite",
+  description: "A vercel.com clone",
+  icons: {
+    icon: "/rocket.svg",
+  },
 }
 
 export default function RootLayout({

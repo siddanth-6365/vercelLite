@@ -22,7 +22,7 @@ async function resolveBuildId(subdomain) {
   const resp = await axios.get(
     `${config.NODE_API_SERVER}/domainMappings/resolve/${subdomain}`
   );
-  console.log(resp.data);
+  console.log("Resolved data:", resp.data);
   const { buildId, projectId } = resp.data;
   domainCache.set(subdomain, { buildId, projectId, ts: now });
   return buildId;
@@ -52,7 +52,7 @@ function trackAnalytics(req, res, next) {
   const geo = geoip.lookup(ip) || {};
   const ua = new UAParser(req.headers["user-agent"]).getResult();
   const referrer = req.headers["referer"] || "";
-  console.log("ip", ip, "geo", geo, "referrer", referrer, "ua", ua);
+  // console.log("ip", ip, "geo", geo, "referrer", referrer, "ua", ua);
 
   const event = {
     projectId: req.projectId,
