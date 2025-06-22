@@ -51,21 +51,21 @@ async function init() {
   const outDir = path.join(__dirname, "output");
 
   publishMessage({ level: "info", text: "Building project ..." });
-  const process = exec(`cd ${outDir} && npm install && npm run build`);
+  const buildProcess = exec(`cd ${outDir} && npm install && npm run build`);
 
-  process.stdout.on("data", (data) => {
+  buildProcess.stdout.on("data", (data) => {
     console.log("Data :", data.toString());
     publishMessage({ level: "info", text: data.toString() });
   });
 
-  process.stdout.on("error", (error) => {
+  buildProcess.stdout.on("error", (error) => {
     console.error("Error:", error.toString());
     publishMessage({ level: "error", text: error.toString() });
     notifyDeployment("failed");
     process.exit(1);
   });
 
-  process.stdout.on("close", async () => {
+  buildProcess.stdout.on("close", async () => {
     console.log("build completed");
     publishMessage({ level: "info", text: "Build completed" });
 

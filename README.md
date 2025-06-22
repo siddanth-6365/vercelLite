@@ -6,6 +6,9 @@
 
 VercelLite is an serverless deployment platform inspired by vercel.com. It provides users to deploy frontend react applications directly from their Github repositories. The platform automates the build and deployment process, provides custom domain mapping, collects web analytics, and offers real-time build log streaming through socket connections.
 
+**YouTube Demo:**
+* [Watch the project demo](https://youtu.be/8LnTBE9aGmk)
+
 **Tech Stack:**
 
 * **Frontend:** Next.js (React, TypeScript, Tailwind CSS, Shadcn UI)
@@ -53,7 +56,3 @@ VercelLite is an serverless deployment platform inspired by vercel.com. It provi
 * **Domain Mapping:** User-defined custom domains are mapped via a Node.js reverse proxy service.
 * **Real-time Log Streaming:** Deployment logs are published to Redis and streamed via Socket.IO to connected clients.
 * **Web Analytics Collection:** Middleware captures user interactions, enriches data via GeoIP and UAParser, and stores in PostgreSQL.
-
-**YouTube Demo:**
-
-* [Watch the project demo(old version's)](https://youtu.be/hsuV1CAn7SQ)
