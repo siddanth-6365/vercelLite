@@ -340,14 +340,14 @@ export function AnalyticsTab({ projectId }: { projectId: string }) {
                             ["Device Type", breakdown.deviceType],
                         ] as [string, BreakdownItem[]][]
                     ).map(([title, items]) => (
-                        <Card key={title} className="h-[350px] overflow-y-scroll ">
+                        <Card key={title} className="h-[350px] ">
                             <CardHeader>
                                 <CardTitle className="flex items-center space-x-2">
                                     {getIconForCategory(title)}
                                     <span>{title} Breakdown</span>
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="max-h-[250px] overflow-y-scroll" >
                                 {items.length === 0 ? (
                                     <div className="text-center py-6">
                                         <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
@@ -356,7 +356,7 @@ export function AnalyticsTab({ projectId }: { projectId: string }) {
                                         <p className="text-sm text-muted-foreground">No data available</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 ">
                                         {items.slice(0, 8).map(({ key, count, percent }, index) => (
                                             <div
                                                 key={key}

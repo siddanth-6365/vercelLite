@@ -163,25 +163,7 @@ export function DeploymentsTab({ projectId }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      {/* <Card>
-        <CardHeader className="flex justify-between items-center">
-          <div>
-            <CardTitle className="text-xl">Deployments</CardTitle>
-            <CardDescription>
-              Start a new build or inspect existing ones
-            </CardDescription>
-          </div>
-          <Button
-            onClick={handleNew}
-            disabled={isDeploying || isPolling}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-          >
-            <Rocket className="w-4 h-4 mr-2" />
-            {isDeploying ? "Deploying..." : "New Deployment"}
-          </Button>
-        </CardHeader>
-      </Card> */}
+    
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="text-center">
@@ -218,7 +200,7 @@ export function DeploymentsTab({ projectId }: Props) {
                 return (
                   <Card
                     key={d.id}
-                    className={`cursor-pointer transition ${conf.bgColor}  border-l-4 ${d.status === "success"
+                    className={`cursor-pointer transition ${conf.bgColor}  border-l-4 dark:bg-gray-950 dark:border-gray-800 ${d.status === "success"
                       ? "border-l-green-500"
                       : d.status === "failed"
                         ? "border-l-red-500"
